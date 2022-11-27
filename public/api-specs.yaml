@@ -1,0 +1,323 @@
+openapi: 3.0.0
+info:
+  title: CoderManagement
+  version: "1.0.0"
+
+paths:
+  /tasks:
+    post:
+      tags:
+        - Task
+      summary: Add a new task 
+      operationId: addTask
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+      responses:
+        '400':
+          description: Invalid input
+        '201':
+          description: Updated task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'  
+    get:
+      tags:
+        - Task
+      parameters:
+        - in: query
+          name: assignee_id
+          schema:
+            type: string
+          required: false
+          description: id of the assigne
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [pending, working, review, done, archive]
+          required: false
+          description: id of the assigne    
+      responses:
+        '400':
+          description: Bad request
+        '404':
+          description: Task not found
+        '200':
+          description: Task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'            
+  /tasks/{id}:
+    get:
+      tags:
+        - Task
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: id of the task
+      responses:
+        '400':
+          description: Bad request
+        '404':
+          description: Task not found
+        '200':
+          description: Task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+    put:
+      tags:
+        - Task
+      summary: Update an existing task
+      operationId: updateTask
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: id of the task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+      responses:
+        '400':
+          description: Invalid request body
+        '404':
+          description: Task not found
+        '200':
+          description: Updated task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+    delete:
+      tags:
+        - Task
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: id of the task
+      responses:
+        '400':
+          description: Invalid request body
+        '404':
+          description: Task not found
+        '204':
+          description: Deleted, no content
+          
+  /users:
+    post:
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '400':
+          description: Invalid input
+        '201':
+          description: User
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'  
+    get:
+      tags:
+        - User
+      parameters:
+        
+        - in: query
+          name: role
+          schema:
+            type: string
+            enum: [manager, employee]
+          required: false
+        - in: query
+          name: name
+          schema:
+            type: string
+          required: false  
+      responses:
+        '400':
+          description: Bad request
+        '404':
+          description: Task not found
+        '200':
+          description: Task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPagination'            
+  /users/{id}:
+    get:
+      tags:
+        - User
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: id of the user
+      responses:
+        '400':
+          description: Bad request
+        '404':
+          description: Task not found
+        '200':
+          description: user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    put:
+      tags:
+        - User
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: id of the user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '400':
+          description: Invalid request body
+        '404':
+          description: Task not found
+        '200':
+          description: Updated task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+    delete:
+      tags:
+        - User
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: id of the user
+      responses:
+        '400':
+          description: Invalid request body
+        '404':
+          description: Task not found
+        '204':
+          description: Deleted, no content
+          
+      
+  
+externalDocs:
+  description: Find out more about Swagger
+  url: 'http://swagger.io'
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: mongo_id
+        name:
+          type: string
+        role:
+          type: string  
+          description: default to employee if empty
+          enum: [manager, employee]
+        is_deleted: 
+          type: boolean
+          example: false
+        updated_at: 
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time  
+      required: 
+        - name
+    UserPagination:
+      type: object
+      properties: 
+        total:
+          type: number
+        page_size: 
+          type: number
+        page_number: 
+          type: number
+        items: 
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+    Task: 
+      type: object
+      properties:
+        id:
+          type: string
+          format: mongo_id
+        name: 
+          type: string
+        description:
+          type: string
+        assignee_id:
+          type: string
+          format: mongo_id
+        status: 
+          type: string
+          description: default to pending if empty
+          enum: [pending, working, review, done, archive]
+        is_deleted: 
+          type: boolean
+          example: false
+        updated_at: 
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+      required: 
+        - name
+        - description
+    TaskPagination:
+      type: object
+      properties: 
+        total:
+          type: number
+        page_size: 
+          type: number
+        page_number: 
+          type: number
+        items: 
+          type: array
+          items:
+            $ref: '#/components/schemas/Task'    
+        
