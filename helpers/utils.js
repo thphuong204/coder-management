@@ -1,8 +1,18 @@
 const utilsHelper = {};
 utilsHelper.sendResponse = (res, status, success, data, errors, message) => {
     const response = {};
-    if (success) response.success = success;
-    if (data) response.data = data;
+    if (data?.total) response.total = data.total;
+    if (data?.total) response.page_size = data.page_size;
+    if (data?.total) response.page_number = data.page_number;
+    if (data?.total) response.items = data.items;
+    
+    if (data?.id) response.id = data.id;
+    if (data?.name) response.name = data.name;
+    if (data?.role) response.role = data.role;
+    if (data?.is_deleted.toString()) response.is_deleted = data.is_deleted;
+    if (data?.updated_at) response.updated_at = data.updated_at;
+    if (data?.created_at) response.created_at = data.created_at;
+
     if (errors) response.errors = errors;
     if (message) response.message = message;
     return res.status(status).json(response);
@@ -13,9 +23,7 @@ utilsHelper.sendResponse = (res, status, success, data, errors, message) => {
       super(message);
       this.statusCode = statusCode;
       this.errorType = errorType;
-      // all errors using this class are operational errors.
       this.isOperational = true;
-      // create a stack trace for debugging (Error obj, void obj to avoid stack polution)
       Error.captureStackTrace(this, this.constructor);
     }
   }
