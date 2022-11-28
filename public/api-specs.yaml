@@ -161,9 +161,9 @@ paths:
         '400':
           description: Bad request
         '404':
-          description: Task not found
+          description: User not found
         '200':
-          description: Task
+          description: User
           content:
             application/json:
               schema:
@@ -183,7 +183,7 @@ paths:
         '400':
           description: Bad request
         '404':
-          description: Task not found
+          description: User not found
         '200':
           description: user
           content:
@@ -210,13 +210,13 @@ paths:
         '400':
           description: Invalid request body
         '404':
-          description: Task not found
+          description: User not found
         '200':
-          description: Updated task
+          description: Updated User
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Task'
+                $ref: '#/components/schemas/User'
     delete:
       tags:
         - User
@@ -231,7 +231,7 @@ paths:
         '400':
           description: Invalid request body
         '404':
-          description: Task not found
+          description: User not found
         '204':
           description: Deleted, no content
           
