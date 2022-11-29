@@ -9,7 +9,7 @@ userController.createUser = async (req, res, next) => {
     const createdUser = await User.create(req.body);
     const id = createdUser._id;
     const name = createdUser.name;
-    const role = createdUser.role;
+    const role = createdUser.role.toLowerCase();
     const is_deleted = createdUser.is_deleted;
     const created_at = createdUser.createdAt;
     const updated_at = createdUser.updatedAt;
@@ -39,11 +39,11 @@ userController.getUsers = async (req, res, next) => {
       if (!filter[keyword]) delete filter[keyword];
     });
     
-    const { role: tmpRole , name: tmpName } = req.query;
+    const { role: tmpRole , name: tmpName } = filter;
     filter.is_deleted = false; 
     //mongoose support find with case insensitive 
-    filter.name = { $regex: tmpName, $options: 'i' };
-    filter.role = { $regex: tmpRole, $options: 'i' };
+    if (tmpName) filter.name = { $regex: tmpName, $options: 'i' };
+    if (tmpRole) filter.role = { $regex: tmpRole, $options: 'i' };
 
     const page_number = req.query.page || 1;
     const page_size = req.query.limit || 10; 
@@ -104,7 +104,6 @@ userController.getUserById = async (req, res, next) => {
     const created_at = userById.createdAt;
     const updated_at = userById.updatedAt;
 
-    console.log("is_deleted", is_deleted)
     sendResponse(res, 200, true, {id, name, role, is_deleted, created_at, updated_at}, null, "");
   } catch (error) {
     next(error);
@@ -141,7 +140,7 @@ userController.editUser = async (req, res, next) => {
     if (!updatedUser) throw new AppError(404, "User Not Found", "Bad request");
 
     const name = updatedUser.name;
-    const role = updatedUser.role;
+    const role = updatedUser.role.toLowerCase();
     const is_deleted = updatedUser.is_deleted;
     const created_at = updatedUser.createdAt;
     const updated_at = updatedUser.updatedAt;
