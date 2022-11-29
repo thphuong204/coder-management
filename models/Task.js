@@ -16,9 +16,8 @@ const taskSchema = new mongoose.Schema(
     },
     assignee: { 
       type: mongoose.SchemaTypes.ObjectId, 
-      ref: "Users" 
+      ref: "User" 
     },
-    
     is_deleted: {
       type: Boolean,
       default: false,
