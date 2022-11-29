@@ -197,24 +197,4 @@ userController.deleteUser = async (req, res, next) => {
   }
 };
 
-userController.getTasksByUserId = async (req, res, next) => {
-  try {
-    if (!req.params.id)
-      throw new AppError(400, "User Id Not Found", "Bad request");
-    const { id } = req.params;
-    const userFound = await User.findById(id).populate("tasks");
-    if (!userFound) sendResponse(res, 404, false, null, null, "User Not Found");
-    sendResponse(
-      res,
-      204,
-      true,
-      { tasks: userFound.tasks },
-      null,
-      ""
-    );
-  } catch (error) {
-    next(error);
-  }
-};
-
 module.exports = userController;

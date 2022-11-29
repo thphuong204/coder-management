@@ -37,15 +37,6 @@ router.get('/', getUsers)
 
 router.get('/:id', getUserById)
 
-//Get tasks of a user
-/**
- * @route GET api/users/:id/tasks
- * @description Get tasks user by id
- * @access public
- */
-router.get('/:id/tasks', getTasksByUserId)
-
-
 //Update: Edit a user info
 /**
  * @route PUT api/users/:id
