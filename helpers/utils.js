@@ -9,7 +9,10 @@ utilsHelper.sendResponse = (res, status, success, data, errors, message) => {
     if (data?.id) response.id = data.id;
     if (data?.name) response.name = data.name;
     if (data?.role) response.role = data.role;
-    if (data?.is_deleted.toString()) response.is_deleted = data.is_deleted;
+    if (data?.description) response.description = data.description;
+    if (data?.status) response.status = data.status;
+    if (data?.assignee_id) response.assignee_id = data.assignee_id;
+    if (data?.is_deleted === true || data?.is_deleted === false) response.is_deleted = data.is_deleted;
     if (data?.updated_at) response.updated_at = data.updated_at;
     if (data?.created_at) response.created_at = data.created_at;
 
