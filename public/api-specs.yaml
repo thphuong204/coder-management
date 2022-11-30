@@ -91,7 +91,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Task'
+              type: object
+              properties:
+                status:
+                  type: string
+                assignee:
+                  type: string
+                removeAssignee:
+                  type: string
+                  enum: [no, yes]
       responses:
         '400':
           description: Invalid request body

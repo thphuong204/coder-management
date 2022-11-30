@@ -49,7 +49,7 @@ userController.getUsers = async (req, res, next) => {
     const page_size = req.query.limit || 10; 
     //skip number
     let offset = page_size * (page_number - 1);
-    const listOfUsers = await User.find(filter).skip(offset).limit(page_size).populate("tasks");
+    const listOfUsers = await User.find(filter).skip(offset).limit(page_size).populate("tasks", "name description status");
 
     //format the result as defined response at previous stage @Swagger
     const convertedListOfUsers = [];
@@ -81,13 +81,14 @@ userController.getUsers = async (req, res, next) => {
   }
 };
 
+//Get user by id, including tasks information
 userController.getUserById = async (req, res, next) => {
   try {
     if (!req.params.id)
       throw new AppError(400, "User Id Not Found", "Bad Request");
     const { id } = req.params;
 
-    const userById = await User.findById(id).populate("tasks");
+    const userById = await User.findById(id).populate("tasks","name description status");
     if (!userById)
       sendResponse(
         res,
@@ -100,11 +101,12 @@ userController.getUserById = async (req, res, next) => {
 
     const name = userById.name;
     const role = userById.role;
+    const tasks = userById.tasks;
     const is_deleted = userById.is_deleted;
     const created_at = userById.createdAt;
     const updated_at = userById.updatedAt;
 
-    sendResponse(res, 200, true, {id, name, role, is_deleted, created_at, updated_at}, null, "");
+    sendResponse(res, 200, true, {id, name, role, tasks, is_deleted, created_at, updated_at}, null, "");
   } catch (error) {
     next(error);
   }
@@ -141,6 +143,7 @@ userController.editUser = async (req, res, next) => {
 
     const name = updatedUser.name;
     const role = updatedUser.role.toLowerCase();
+    const tasks = updatedUser.tasks;
     const is_deleted = updatedUser.is_deleted;
     const created_at = updatedUser.createdAt;
     const updated_at = updatedUser.updatedAt;
@@ -149,7 +152,7 @@ userController.editUser = async (req, res, next) => {
       res,
       200,
       true,
-      { id, name, role, is_deleted, created_at, updated_at},
+      { id, name, role, tasks, is_deleted, created_at, updated_at},
       null,
       ""
     );
@@ -196,5 +199,7 @@ userController.deleteUser = async (req, res, next) => {
     next(err);
   }
 };
+
+
 
 module.exports = userController;
