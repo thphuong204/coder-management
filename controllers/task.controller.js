@@ -149,6 +149,12 @@ taskController.updateTask = async (req, res, next) => {
       return
     }
     
+    //For input together tmpAssigneeId and tmpRemoveAssignee => throw error
+    if ( tmpAssigneeId && tmpRemoveAssignee) {
+      throw new AppError(400,"You can't assign and unassign at the same time","Bad Request")
+      return
+    }
+
     //For status change requirement
     if (status === "done" && tmpStatus !== "archive") {
       throw new AppError(400,"Can only change status of 'done' task to 'archive'","Bad Request")
@@ -340,35 +346,45 @@ taskController.deleteTask = async (req, res, next) => {
 
     //only delete task not yet deleted
     const idFoundCheck = await Task.findById(id)
-    if (idFoundCheck.is_deleted.toString()) {
+    if (idFoundCheck.is_deleted.toString() === "true") {
       throw new AppError(404,"Task is no longer exist","Bad Request")
       return
     }
 
+    const assigneeId = idFoundCheck?.assignee;
+    console.log("assigneeId", assigneeId)
+
+    //remove  deleted task id from user
+    if (assigneeId) {
+      let assigneeUser = await User.findById(assigneeId)
+      const removedTasks = []
+        assigneeUser.tasks.map((task) => {
+          if (task.toString() !== id) {
+            removedTasks.push(task)
+          }
+        })
+        assigneeUser.tasks = removedTasks;
+        assigneeUser = await assigneeUser.save();
+    }
+    
+
     const deletedTask = await Task.findByIdAndUpdate(
       id,
-      { is_deleted: true },
+      { is_deleted: true,
+        assignee: null
+      },
       options
     );
     
-    const name = deletedTask.name;
-    const description = deletedTask.description;
-    const status = deletedTask.status;
-    const assignee = deletedTask.assignee;
-    const is_deleted = deletedTask.is_deleted;
-    const created_at = deletedTask.createdAt;
-    const updated_at = deletedTask.updatedAt;
+    const name = deletedTask?.name;
+    const description = deletedTask?.description;
+    const status = deletedTask?.status;
+    const assignee = deletedTask?.assignee || {};
+    const is_deleted = deletedTask?.is_deleted;
+    const created_at = deletedTask?.createdAt;
+    const updated_at = deletedTask?.updatedAt;
     
-    //remove  deleted task id from user
-    const assigneeUser = await User.findById(assignee)
-    const removedTasks = []
-      assigneeUser.tasks.map((task) => {
-        if (task.toString() !== id) {
-          removedTasks.push(task)
-        }
-      })
-      assigneeUser.tasks = removedTasks;
-      assigneeUser = await assigneeUser.save();
+    
 
     sendResponse(
       res,
@@ -403,7 +419,19 @@ taskController.getTaskById = async (req, res, next) => {
       let name = taskById.name;
       let description = taskById.description;
       let status = taskById.status;
-      let assignee = taskById.assignee;
+
+      let assignee = {}
+      const assigneeId  = taskById?.assignee?._id || "";
+      const assigneeName  = taskById?.assignee?.name || "";
+      const assigneeRole  = taskById?.assignee?.role || "";
+      if (assigneeId) {
+          assignee = {
+          id: assigneeId,
+          name: assigneeName,
+          role: assigneeRole,
+        }
+      }
+
       let is_deleted = taskById.is_deleted;
       let created_at = taskById.createdAt;
       let updated_at = taskById.updatedAt;

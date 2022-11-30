@@ -11,8 +11,8 @@ utilsHelper.sendResponse = (res, status, success, data, errors, message) => {
     if (data?.role) response.role = data.role;
     if (data?.tasks) response.tasks = data.tasks;
     if (data?.description) response.description = data.description;
-    if (data?.assignee) response.assignee = data.assignee;
     if (data?.status) response.status = data.status;
+    if (data?.assignee) response.assignee = data.assignee;
     if (data?.is_deleted === true || data?.is_deleted === false) response.is_deleted = data.is_deleted;
     if (data?.updated_at) response.updated_at = data.updated_at;
     if (data?.created_at) response.created_at = data.created_at;
