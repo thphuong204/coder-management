@@ -253,7 +253,21 @@ components:
         role:
           type: string  
           description: default to employee if empty
-          enum: [manager, employee]
+          enum: [employee, manager]
+        tasks:
+          type: array
+          items:
+            type: object
+            properties:
+              id: 
+                type: string
+                format: mongo_id
+              name:
+                type: string
+              description: 
+                type: string
+              status:
+                type: string
         is_deleted: 
           type: boolean
           example: false
@@ -288,13 +302,20 @@ components:
           type: string
         description:
           type: string
-        assignee_id:
-          type: string
-          format: mongo_id
         status: 
           type: string
           description: default to pending if empty
           enum: [pending, working, review, done, archive]
+        assignee:
+          type: object
+          properties:
+            id:
+              type: string
+              format: mongo_id
+            name:
+              type: string
+            role:
+              type: string
         is_deleted: 
           type: boolean
           example: false
