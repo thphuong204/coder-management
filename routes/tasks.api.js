@@ -6,6 +6,7 @@ const {
   getTasks,
   updateTask,
   deleteTask,
+  getTaskById,
 } = require("../controllers/task.controller");
 
 //CREAT
@@ -23,6 +24,17 @@ router.post("/", createTask);
   * @parameters : "name", "status", "createdAt", "updatedAt"
   */
 router.get("/", getTasks);
+
+//READ
+/**
+  * @route GET api/tasks/:id
+  * @description
+  * @allowedUpdates : {
+  * "description": string, 
+  * "status": string (enum: ["pending", "working", "review", "done", "archive"]), 
+  * "assignee": userId type ObjectId}
+  */
+ router.get("/:id", getTaskById);
 
 //UPDATE
 /**
