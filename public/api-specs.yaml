@@ -30,18 +30,17 @@ paths:
         - Task
       parameters:
         - in: query
-          name: assignee_id
+          name: name
           schema:
             type: string
           required: false
-          description: id of the assigne
+          description: name of task
         - in: query
           name: status
           schema:
             type: string
             enum: [pending, working, review, done, archive]
-          required: false
-          description: id of the assigne    
+          required: false 
       responses:
         '400':
           description: Bad request
