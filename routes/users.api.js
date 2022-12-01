@@ -1,13 +1,14 @@
 const express = require("express");
 const router = express.Router();
+const { body } = require('express-validator');
+const users_role_array = ["manager", "employee"];
 
 const {
   createUser,
   getUsers,
   getUserById,
   editUser,
-  deleteUser,
-  getTasksByUserId,
+  deleteUser
 } = require("../controllers/user.controller");
 
 //Create
@@ -45,7 +46,15 @@ router.get('/:id', getUserById)
  * @allowedEdits : {"role": String enum ["manager", "employee"], 
  *                  "name": String}
  */
- router.put('/:id', editUser)
+ router.put(
+  '/:id', 
+
+  // Use express-validator
+  body('role','role must be filled with one of these options: manager, employee')
+  .isString().custom((value) => users_role_array.includes(value)),
+
+  editUser
+  )
 
 //Delete a user by Id
 /**

@@ -1,5 +1,7 @@
 const express = require("express");
 const router = express.Router();
+const { body } = require('express-validator');
+const tasks_status_array = ["pending", "working", "review", "done", "archive"];
 
 const {
   createTask,
@@ -45,7 +47,15 @@ router.get("/", getTasks);
   * "status": string (enum: ["pending", "working", "review", "done", "archive"]), 
   * "assignee": userId type ObjectId}
   */
-router.put("/:id", updateTask);
+router.put(
+  "/:id", 
+
+  // Use express-validator
+  body('status','status must be filled with one of these options: pending, working, review, done, archive' )
+  .isString().custom((value) => tasks_status_array.includes(value)),
+
+  updateTask
+);
 
 //DELETE
 /**
