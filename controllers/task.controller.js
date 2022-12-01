@@ -346,6 +346,9 @@ taskController.updateTask = async (req, res, next) => {
       updated_at = updatedTask.updatedAt;
     }
 
+    //in case no change in assignee/ removeAssignee
+    status = tmpStatus;
+    
     sendResponse(
       res,
       200,
