@@ -141,16 +141,13 @@ taskController.updateTask = async (req, res, next) => {
     let created_at = updatedTask.createdAt;
     let updated_at = updatedTask.updatedAt;
 
-    console.log("assigneeId", assigneeId)
-    console.log("tmpAssigneeId", tmpAssigneeId)
-
     if (!updatedTask) {
       throw new AppError(404, `Task Not Found`, "Bad Request");
       return
     }
     
     //For input together tmpAssigneeId and tmpRemoveAssignee => throw error
-    if ( tmpAssigneeId && tmpRemoveAssignee) {
+    if ( tmpAssigneeId && (tmpRemoveAssignee === "yes")) {
       throw new AppError(400,"You can't assign and unassign at the same time","Bad Request")
       return
     }
@@ -190,11 +187,22 @@ taskController.updateTask = async (req, res, next) => {
 
     // Newly assign the task to only 1 user
     if (!assigneeId && tmpAssigneeId) {
-      let assigneeUser = await User.findById(tmpAssigneeId)
-      if (!assigneeUser) { 
-        throw new AppError(404,"User Not Exist", "Bad Request")
+      let assigneeUser = await User.find({_id: tmpAssigneeId, is_deleted: false})
+      updatedTask = await Task.find({_id: id, is_deleted: false})
+
+      if (!assigneeUser.length) { 
+        throw new AppError(404,"User Not Exist To Be Assigned", "Bad Request")
         return 
       }
+
+      if (!updatedTask.length) { 
+        throw new AppError(404,"Task Not Exist", "Bad Request")
+        return 
+      }
+
+      assigneeUser = await User.findById(tmpAssigneeId)
+      updatedTask = await Task.findById(id)
+
       if (tmpStatus) {
         updatedTask.status = tmpStatus 
       } else {
@@ -352,7 +360,6 @@ taskController.deleteTask = async (req, res, next) => {
     }
 
     const assigneeId = idFoundCheck?.assignee;
-    console.log("assigneeId", assigneeId)
 
     //remove  deleted task id from user
     if (assigneeId) {
@@ -406,15 +413,10 @@ taskController.getTaskById = async (req, res, next) => {
 
     const { id } = req.params;
     const taskById = await Task.findById(id).populate("assignee","name role");
-    if (!taskById)
-      sendResponse(
-        res,
-        404,
-        false,
-        null,
-        "Not found",
-        "Can't find task with this id"
-      );
+    
+    if (!taskById || (taskById.is_deleted.toString() === "true")) {
+      throw new AppError(400, "Task Not Found", "Bad Request")
+    }
 
       let name = taskById.name;
       let description = taskById.description;

@@ -89,15 +89,9 @@ userController.getUserById = async (req, res, next) => {
     const { id } = req.params;
 
     const userById = await User.findById(id).populate("tasks","name description status");
-    if (!userById)
-      sendResponse(
-        res,
-        404,
-        false,
-        null,
-        "Not found",
-        "Can't find user with this id"
-      );
+    if (!userById || (userById.is_deleted.toString() === "true")) {
+      throw new AppError(400, "User Not Found", "Bad Request")
+    }
 
     const name = userById.name;
     const role = userById.role;
@@ -133,7 +127,7 @@ userController.editUser = async (req, res, next) => {
 
     //only edit user not yet deleted
     const idFoundCheck = await User.findById(id)
-    if (idFoundCheck.is_deleted) {
+    if (!idFoundCheck || (idFoundCheck.is_deleted.toString() === "true")) {
       throw new AppError(404,"User is no longer exist","Bad Request")
       return
     }
@@ -170,7 +164,7 @@ userController.deleteUser = async (req, res, next) => {
 
     //only delete user not yet deleted
     const idFoundCheck = await User.findById(id)
-    if (idFoundCheck.is_deleted) {
+    if (!idFoundCheck || (idFoundCheck.is_deleted.toString() === "true")) {
       throw new AppError(404,"User is no longer exist","Bad Request")
       return
     }

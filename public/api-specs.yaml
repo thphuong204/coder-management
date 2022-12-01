@@ -138,7 +138,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              type: object
+              properties:
+                name: 
+                  type: string
+                role: 
+                  type: string
+                  enum: [employee, manager]
       responses:
         '400':
           description: Invalid input
@@ -212,7 +218,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              type: object
+              properties:
+                name: 
+                  type: string
+                role: 
+                  type: string
+                  enum: [employee, manager]
       responses:
         '400':
           description: Invalid request body
