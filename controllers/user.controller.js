@@ -2,11 +2,21 @@ const mongoose = require("mongoose");
 const User = require("../models/User");
 const userController = {};
 const { sendResponse, AppError } = require("../helpers/utils");
+const { validationResult } = require('express-validator');
 
 userController.createUser = async (req, res, next) => {
   try {
     if (!req.body) throw new AppError(400, "No request body", "Bad Request");
+
+    //Express validation, check information before creating a new document
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) {
+			res.status(400).json({ errors: errors.array() });
+			return;
+		}
+
     const createdUser = await User.create(req.body);
+    
     const id = createdUser._id;
     const name = createdUser.name;
     const role = createdUser.role.toLowerCase();
@@ -111,6 +121,14 @@ userController.editUser = async (req, res, next) => {
   try {
     if (!req.body || !req.params.id)
       throw new AppError(400, "No request body or no User id", "Bad Request");
+
+    //Express validation, check information before creating a new document
+		const errors = validationResult(req);
+    console.log("errors", errors)
+		if (!errors.isEmpty()) {
+			res.status(400).json({ errors: errors.array() });
+			return;
+		}
 
     const { id } = req.params;
     const bodyToUpdate = req.body;

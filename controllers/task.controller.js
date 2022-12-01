@@ -3,11 +3,20 @@ const User = require("../models/User");
 const Task = require("../models/Task");
 const taskController = {};
 const { sendResponse, AppError } = require("../helpers/utils");
-const { update } = require("../models/User");
+const { validationResult } = require('express-validator');
 
 taskController.createTask = async (req, res, next) => {
   try {
     if (!req.body) throw new AppError(400, "No request body", "Bad Request");
+
+    //Express validation, check information before creating a new document
+		const errors = validationResult(req);
+    console.log("errors", errors)
+		if (!errors.isEmpty()) {
+			res.status(400).json({ errors: errors.array() });
+			return;
+		}
+
     const createdTask = await Task.create(req.body);
     const id = createdTask._id;
     const name = createdTask.name;
@@ -119,6 +128,14 @@ taskController.updateTask = async (req, res, next) => {
   try{
     if (!req.body || !req.params.id)
       throw new AppError(400, "No Request Body / No Task Id", "Bad Request");
+
+    //Express validation, check information before creating a new document
+		const errors = validationResult(req);
+    console.log("errors", errors)
+		if (!errors.isEmpty()) {
+			res.status(400).json({ errors: errors.array() });
+			return;
+		}
 
     const { id } = req.params;
     const bodyToUpdate = req.body;
