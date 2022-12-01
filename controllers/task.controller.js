@@ -11,7 +11,6 @@ taskController.createTask = async (req, res, next) => {
 
     //Express validation, check information before creating a new document
 		const errors = validationResult(req);
-    console.log("errors", errors)
 		if (!errors.isEmpty()) {
 			res.status(400).json({ errors: errors.array() });
 			return;
@@ -131,7 +130,6 @@ taskController.updateTask = async (req, res, next) => {
 
     //Express validation, check information before creating a new document
 		const errors = validationResult(req);
-    console.log("errors", errors)
 		if (!errors.isEmpty()) {
 			res.status(400).json({ errors: errors.array() });
 			return;
