@@ -141,7 +141,7 @@ taskController.updateTask = async (req, res, next) => {
     let created_at = updatedTask.createdAt;
     let updated_at = updatedTask.updatedAt;
 
-    if (!updatedTask) {
+    if (!updatedTask || (updatedTask.is_deleted.toString() === "true")) {
       throw new AppError(404, `Task Not Found`, "Bad Request");
       return
     }
