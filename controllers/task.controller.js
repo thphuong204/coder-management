@@ -3,18 +3,19 @@ const User = require("../models/User");
 const Task = require("../models/Task");
 const taskController = {};
 const { sendResponse, AppError } = require("../helpers/utils");
-const { validationResult } = require('express-validator');
+const tasks_status_array = ["pending", "working", "review", "done", "archive"];
 
 taskController.createTask = async (req, res, next) => {
   try {
     if (!req.body) throw new AppError(400, "No request body", "Bad Request");
 
-    //Express validation, check information before creating a new document
-		const errors = validationResult(req);
-		if (!errors.isEmpty()) {
-			res.status(400).json({ errors: errors.array() });
-			return;
-		}
+    const tmpStatus = req?.body?.status || "";
+
+     //For status in array
+     if (tmpStatus && !tasks_status_array.includes(tmpStatus)) {
+      throw new AppError(400, `status can be filled with one of these options: pending, working, review, done, archive`, "Bad Request")
+      return
+    }
 
     const createdTask = await Task.create(req.body);
     const id = createdTask._id;
@@ -128,13 +129,6 @@ taskController.updateTask = async (req, res, next) => {
     if (!req.body || !req.params.id)
       throw new AppError(400, "No Request Body / No Task Id", "Bad Request");
 
-    //Express validation, check information before creating a new document
-		const errors = validationResult(req);
-		if (!errors.isEmpty()) {
-			res.status(400).json({ errors: errors.array() });
-			return;
-		}
-
     const { id } = req.params;
     const bodyToUpdate = req.body;
 
@@ -164,6 +158,12 @@ taskController.updateTask = async (req, res, next) => {
     //For input together tmpAssigneeId and tmpRemoveAssignee => throw error
     if ( tmpAssigneeId && (tmpRemoveAssignee === "yes")) {
       throw new AppError(400,"You can't assign and unassign at the same time","Bad Request")
+      return
+    }
+
+    //For status in array
+    if (tmpStatus && !tasks_status_array.includes(tmpStatus)) {
+      throw new AppError(400, `status can be filled with one of these options: pending, working, review, done, archive`, "Bad Request")
       return
     }
 

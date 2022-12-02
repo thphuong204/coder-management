@@ -2,18 +2,19 @@ const mongoose = require("mongoose");
 const User = require("../models/User");
 const userController = {};
 const { sendResponse, AppError } = require("../helpers/utils");
-const { validationResult } = require('express-validator');
+const users_role_array = ["manager", "employee"];
 
 userController.createUser = async (req, res, next) => {
   try {
     if (!req.body) throw new AppError(400, "No request body", "Bad Request");
 
-    //Express validation, check information before creating a new document
-		const errors = validationResult(req);
-		if (!errors.isEmpty()) {
-			res.status(400).json({ errors: errors.array() });
-			return;
-		}
+    const tmpRole = req?.body?.role || ""
+
+    if(tmpRole && !users_role_array.includes(tmpRole)) {
+      //For role in array
+      throw new AppError(400, `role can be filled with one of these options: employee, manager`, "Bad Request")
+      return
+    }
 
     const createdUser = await User.create(req.body);
     
@@ -139,6 +140,14 @@ userController.editUser = async (req, res, next) => {
         throw new AppError(400,`Keyword ${keyword} is not accepted. Only 'role' or 'name' are accepted for editting`,"Bad request");
       if (!bodyToUpdate[keyword]) delete bodyToUpdate[keyword];
     });
+
+    const tmpRole = req?.body?.role || ""
+
+    if(tmpRole && !users_role_array.includes(tmpRole)) {
+      //For role in array
+      throw new AppError(400, `role can be filled with one of these options: employee, manager`, "Bad Request")
+      return
+    }
 
     const options = { new: true };
 
