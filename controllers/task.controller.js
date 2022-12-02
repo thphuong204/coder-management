@@ -155,6 +155,12 @@ taskController.updateTask = async (req, res, next) => {
       return
     }
     
+    //
+    if ( (tmpRemoveAssignee !== "yes") && (tmpRemoveAssignee !== "no") ) {
+      throw new AppError(400,"removeAssignee can be filled with one of these option: yes, no","Bad Request")
+      return
+    }
+
     //For input together tmpAssigneeId and tmpRemoveAssignee => throw error
     if ( tmpAssigneeId && (tmpRemoveAssignee === "yes")) {
       throw new AppError(400,"You can't assign and unassign at the same time","Bad Request")
@@ -347,9 +353,13 @@ taskController.updateTask = async (req, res, next) => {
     }
 
     //in case no change in assignee/ removeAssignee
-    updatedTask.status = tmpStatus;
-    updatedTask = await updatedTask.save()
-    status = updatedTask.status;
+    if(tmpStatus && !tmpAssigneeId && !tmpRemoveAssignee) {
+      console.log("ahaha")
+      updatedTask.status = tmpStatus;
+      updatedTask = await updatedTask.save()
+      status = updatedTask.status;
+    }
+    
 
     sendResponse(
       res,
