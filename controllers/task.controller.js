@@ -156,7 +156,7 @@ taskController.updateTask = async (req, res, next) => {
     }
     
     //
-    if ( (tmpRemoveAssignee !== "yes") && (tmpRemoveAssignee !== "no") ) {
+    if (tmpRemoveAssignee && (tmpRemoveAssignee !== "yes") && (tmpRemoveAssignee !== "no") ) {
       throw new AppError(400,"removeAssignee can be filled with one of these option: yes, no","Bad Request")
       return
     }
