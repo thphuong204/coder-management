@@ -123,13 +123,6 @@ userController.editUser = async (req, res, next) => {
     if (!req.body || !req.params.id)
       throw new AppError(400, "No request body or no User id", "Bad Request");
 
-    //Express validation, check information before creating a new document
-		const errors = validationResult(req);
-		if (!errors.isEmpty()) {
-			res.status(400).json({ errors: errors.array() });
-			return;
-		}
-
     const { id } = req.params;
     const bodyToUpdate = req.body;
 
